@@ -1,7 +1,9 @@
 # 编译原理作业
-环境：Apple clang version 11.0.0 (clang-1100.0.33.12)
-语言：C++11
-用法：
+### 环境
+Apple clang version 11.0.0 (clang-1100.0.33.12)
+### 语言
+C++11
+### 用法
 ```shell
 make
 bin/main

@@ -155,32 +155,62 @@ syntactic_parser::next_line()
 bool
 syntactic_parser::error_discover(string identifier)
 {
-    if (identifier == ";") { //检测是否有分号
-        if (word_t.name != identifier) {
-            string err = "lack of '" + identifier + "'";
-            add_error(err);
-            return true;
-        } else {
-            next_word();
-            return false;
-        }    
-    } else { //检测除分号之外的操作符 :=赋值号
-        if (word_t.name != identifier) {
-            string err = "lack of '" + identifier + "'";
-            add_error(err);
-            while (word_t.type_id != VARIABLE && word_t.name != ";") {
-                if (!next_word()) return true;
-                if (word_t.name == identifier) {
-                    return false; //跳过一些非变量符号之后如果有赋值号则继续分析该语句
-                }
+    // if (identifier == ";") { //检测是否有分号
+    //     if (word_t.name != identifier) {
+    //         string err = "lack of '" + identifier + "'";
+    //         add_error(err);
+    //         return true;
+    //     } else {
+    //         next_word();
+    //         return false;
+    //     }    
+    // } else { //检测除分号之外的操作符(:=赋值号)
+    //     if (word_t.name != identifier) {
+    //         string err_word;
+    //         while (word_t.type_id != VARIABLE && word_t.name != ";") {
+    //         //跳过一些非变量符号之后如果有赋值号则继续分析该语句
+    //             err_word += word_t.name;
+    //             if (!next_word()) return true;
+    //             if (word_t.name == identifier) {
+    //                 string err = "error symbol " + err_word;
+    //                 add_error(err);
+    //                 next_word();
+    //                 return false; 
+    //             }
+    //         }
+    //         string err = "lack of '" + identifier + "'";
+    //         add_error(err);
+    //         if (word_t.name == ";") {
+    //             if (!next_word()) return true;
+    //         }
+    //         return true;
+    //     } else {
+    //         next_word();
+    //         return false;
+    //     }
+    // } 
+
+    if (word_t.name != identifier) {
+        string err_word;
+        while (word_t.type_id != VARIABLE && word_t.name != ";") {
+        //跳过一些非变量符号之后如果有赋值号则继续分析该语句
+            err_word += word_t.name;
+            if (!next_word()) return true;
+            if (word_t.name == identifier) {
+                string err = "error symbol " + err_word;
+                add_error(err);
+                next_word();
+                return false; 
             }
-            if (word_t.name == ";") {
-                if (!next_word()) return true;
-            }
-            return true;
-        } else {
-            next_word();
-            return false;
         }
+        string err = "lack of '" + identifier + "'";
+        add_error(err);
+        if (word_t.name == ";") {
+            if (!next_word()) return true;
+        }
+        return true;
+    } else {
+        next_word();
+        return false;
     } 
 }

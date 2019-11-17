@@ -6,7 +6,7 @@ C++11
 ### 用法
 ```shell
 make
-bin/main
+bin/main testfile
 ```
 # 词法分析
 ### 目的

@@ -9,9 +9,12 @@ int main(int ac, char** av)
     syntactic_parser sp;
     sp.synparse(*(av+1));
     sp.print_words();
+    cout << endl;
     if (!sp.has_error()) {
         cout << "success" << endl;
     } else {
         sp.print_errors();
     }
+    cout << endl;
+    if (sp.has_expre()) sp.print_expre();
 }

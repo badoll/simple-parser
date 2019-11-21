@@ -60,65 +60,89 @@ syntactic_parser::statement()
         if (!next_word()) return;
         if (word_t.name == "end") return;
     }
+    string result = word_t.name;
+    string op = "";
     if (!next_word()) return;
     //检查是否有赋值号
     if (error_discover(":=")) {
     //如果没有赋值号则跳过开始分析下一个语句
         return;
     }
-    expression();
+    if (expression()) {
+        string ag1 = var;
+        string ag2 = "";
+        semantic_tetrad.push_back(make_tuple(result,ag1,op,ag2));
+    }
     //检查是否有分号
     error_discover(";");
+
 }
 
-void
+bool
 syntactic_parser::expression()
 {
-    term();
+    if (!term()) return false;
     while (word_t.name == "+" || word_t.name == "-") {
-        if (!next_word()) return;
-        term();
+        string ag1 = var;
+        string op = word_t.name;
+        if (!next_word()) return false;
+        if (!term()) return false;
+        string ag2 = var;
+        string result = get_varname();
+        semantic_tetrad.push_back(make_tuple(result,ag1,op,ag2));
+        var = result;
     }
+    return true;
 }
 
-void
+bool
 syntactic_parser::term()
 {
-    factor();
+    if (!factor()) return false;
     while (word_t.name == "*" || word_t.name == "/") {
-        if (!next_word()) return;
-        factor();
+        string ag1 = var;
+        string op = word_t.name;
+        if (!next_word()) return false;
+        if (!factor()) return false;
+        string ag2 = var;
+        string result = get_varname();
+        semantic_tetrad.push_back(make_tuple(result,ag1,op,ag2));
+        var = result;
     }
+    return true;
 }
 
-void
+bool
 syntactic_parser::factor()
 {
     if (word_t.name == ")") {
         string err = "lack of factor";
         add_error(err);    
-        return;
+        return false;
     }
     if (word_t.name == "(") {
-        if (!next_word()) return;
-        expression();
+        if (!next_word()) return false;
+        if (!expression()) return false;
         if (word_t.name != ")") {
             string err = "lack of ')'";
             add_error(err);    
-            return;
+            return false;
         }
     } else if (word_t.type_id == KEYWORD || 
         (word_t.type_id != VARIABLE && word_t.type_id != DIGIT)) {
         if (word_t.name == ";") {
             string err = "lack of factor";
             add_error(err);
-            return;
         } else {
             string err = word_t.name + " can't be factor";
             add_error(err);
         }
+        next_word();
+        return false;
     }
-    if (!next_word()) return;
+    if (word_t.name != ")") var = word_t.name;
+    next_word();
+    return true;
 }
 
 bool
@@ -155,44 +179,9 @@ syntactic_parser::next_line()
 bool
 syntactic_parser::error_discover(string identifier)
 {
-    // if (identifier == ";") { //检测是否有分号
-    //     if (word_t.name != identifier) {
-    //         string err = "lack of '" + identifier + "'";
-    //         add_error(err);
-    //         return true;
-    //     } else {
-    //         next_word();
-    //         return false;
-    //     }    
-    // } else { //检测除分号之外的操作符(:=赋值号)
-    //     if (word_t.name != identifier) {
-    //         string err_word;
-    //         while (word_t.type_id != VARIABLE && word_t.name != ";") {
-    //         //跳过一些非变量符号之后如果有赋值号则继续分析该语句
-    //             err_word += word_t.name;
-    //             if (!next_word()) return true;
-    //             if (word_t.name == identifier) {
-    //                 string err = "error symbol " + err_word;
-    //                 add_error(err);
-    //                 next_word();
-    //                 return false; 
-    //             }
-    //         }
-    //         string err = "lack of '" + identifier + "'";
-    //         add_error(err);
-    //         if (word_t.name == ";") {
-    //             if (!next_word()) return true;
-    //         }
-    //         return true;
-    //     } else {
-    //         next_word();
-    //         return false;
-    //     }
-    // } 
-
     if (word_t.name != identifier) {
         string err_word;
-        while (word_t.type_id != VARIABLE && word_t.name != ";") {
+        while (word_t.type_id != VARIABLE && word_t.name != ";"&&word_t.name != "end") {
         //跳过一些非变量符号之后如果有赋值号则继续分析该语句
             err_word += word_t.name;
             if (!next_word()) return true;
@@ -206,11 +195,35 @@ syntactic_parser::error_discover(string identifier)
         string err = "lack of '" + identifier + "'";
         add_error(err);
         if (word_t.name == ";") {
-            if (!next_word()) return true;
+            next_word();
         }
         return true;
     } else {
         next_word();
         return false;
     } 
+}
+
+string
+syntactic_parser::get_varname()
+{
+    static int varcount = 1;
+    string name = "T" + to_string(varcount++);
+    return name;
+}
+
+void
+syntactic_parser::print_expre()
+{
+    cout << "Intermediate Code:" << endl;
+    for (const auto& t : semantic_tetrad) {
+        cout << get<0>(t) << " = " << get<1>(t)<< " " << get<2>(t) << " " << get<3>(t) << endl;
+    }
+}
+
+bool
+syntactic_parser::has_expre()
+{
+    if (semantic_tetrad.size() > 0) return true;
+    return false;
 }

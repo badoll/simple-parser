@@ -168,7 +168,7 @@ syntactic_parser::next_word()
 bool
 syntactic_parser::next_line()
 {
-    while (!lexical_parser::next_line(datas[linecount])) {
+    while (!lexical_parser::next_line(datas[linecount])) {//空行
         if (linecount == datas.size()) {
             return false;
         }
@@ -227,3 +227,4 @@ syntactic_parser::has_expre()
     if (semantic_tetrad.size() > 0) return true;
     return false;
 }
+

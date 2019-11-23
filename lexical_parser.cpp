@@ -118,7 +118,7 @@ lexical_parser::next_line(string line)
     annot = false;
     linecount++;
     data = line;
-    if (line == "") {
+    if (line == "") {//空行
         return false;
     } else {
         sit_line = data.begin();

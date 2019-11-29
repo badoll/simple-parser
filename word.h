@@ -8,6 +8,7 @@
 #include <map>
 
 using namespace std;
+#define ILLEGAL false
 
 enum type{
     KEYWORD,
@@ -26,6 +27,8 @@ public:
     word(bool is_legal):legal(is_legal) {}
     bool is_legal() const;
     bool is_annot() const;
+    bool is_conditopt() const;
+    bool is_conditkw() const;
     void print() const;
 private:
     string name;
@@ -35,22 +38,38 @@ private:
 };
 
 static map<string,int> category = {
-    {"begin",1},{"if",2},{"then",3},{"while",4},
-    {"do",5},{"end",6},{"variable",10},{"digit",11},
-    {"+",13},{"-",14},{"*",15},{"/",16},{":=",17},
-    {"<",20},{"<>",21},{"<=",22},{">",23},{">=",24},
-    {"==",25},{"!=",26},{";",27},
-    {"(",28},{")",29},{"//",30},{"#",0}
+    {"main",1},{"if",2},{"while",3},
+    {"+",4},{"-",5},{"*",6},{"/",7},{"=",8},
+    {"<",9},{"<=",10},{">",11},{">=",12},
+    {"==",13},{"!=",14},{";",15},
+    {"(",16},{")",17},{"{",18},{"}",19},{"//",20},
+    {"variable",21},{"digit",22},
+    {"#",0}
 };
 static vector<string> keyword = {
-    "begin","if","then","while","do","end"  
+    "if","while","main"
 };
 static vector<string> opt = {
     "+","-","*","/","<","<=",">",
-    ">=","==","<>","!=",":=",";",
-    "(",")","//","#"
+    ">=","==","!=","=",";",
+    "(",")","{","}","//","#"
+};
+
+static vector<string> condition_opt = {
+    "<","<=","==",">=",">","!="
+};
+
+static vector<string> condition_kw = {
+    "if","while"
 };
 
 static string annot_sym = "//";
+
+bool is_keyword(string word);
+bool is_operator(string word);
+bool is_variable(string word);
+bool is_digit(string word);
+bool is_letter(char c);
+bool is_num(char c);
 
 #endif

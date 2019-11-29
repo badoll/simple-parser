@@ -1,10 +1,8 @@
 #include "lexical_parser.h"
-static bool is_letter(char c);
-static bool is_num(char c);
 static bool is_symbol(char c);
 
 void
-lexical_parser::lexparse(string path)
+lexical_parser::start(string path)
 {
     ifstream file(path);
     if (!file.is_open()) {
@@ -58,7 +56,7 @@ lexical_parser::scan()
         if (!dig.is_legal()) {
         //非法词语，数字加字母
             add_error("variable '" + digit + "' is illegal");
-            word_t = word(false);
+            word_t = word(ILLEGAL);
         } else {
             word_t = dig;
             words.push_back(dig);
@@ -104,7 +102,7 @@ lexical_parser::divide_symbol()
         tmp = tmp.substr(0,minpos);
         sit_line = tmpit + minpos;  //省略非法符号
         add_error("symbol '" + tmp + "' is illegal");
-        word_t = word(false);
+        word_t = word(ILLEGAL);
     } else { //连续符号中前面有合法操作符的情况
         word_t = word(symbol);
         sit_line = tmpit + 1;
@@ -142,9 +140,10 @@ lexical_parser::get_words() const
 void
 lexical_parser::print_words() const
 {
-    cout << "Words: ";
-    for (const auto& word : words) {
-        word.print();
+    cout << "Words:" << endl;
+    for (int i = 0; i < words.size(); ++i) {
+        words[i].print();
+        if (i != words.size()-1 && i % 5 == 4) cout << endl;
     }
     cout << endl;
 }
@@ -164,19 +163,6 @@ lexical_parser::print_errors() const
         cout << err_msgs[i] << endl;
 }
 
-bool
-is_letter(char c)
-{
-    if ((c >= 'a' && c <= 'z') || (c >='A' && c <= 'Z')) return true;
-    return false;
-}
-
-bool
-is_num(char c)
-{
-    if (c >= '0' && c <= '9') return true;
-    return false;
-}
 
 bool
 is_symbol(char c)

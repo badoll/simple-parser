@@ -7,7 +7,7 @@ int main(int ac, char** av)
     // lp.lexparse("data.txt");
     // lp.print_words();
     syntactic_parser sp;
-    sp.synparse(*(av+1));
+    sp.start(*(av+1));
     sp.print_words();
     cout << endl;
     if (!sp.has_error()) {
@@ -16,5 +16,5 @@ int main(int ac, char** av)
         sp.print_errors();
     }
     cout << endl;
-    if (sp.has_expre()) sp.print_expre();
+    if (sp.has_icode()) sp.print_icode();
 }

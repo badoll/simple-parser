@@ -8,7 +8,7 @@ class lexical_parser
 {    
 public:
     lexical_parser():linecount(0),annot(false){}
-    void lexparse(string filepath);
+    void start(string filepath);
     void analyse(string str);
     bool next_line(string line);
     word scan();

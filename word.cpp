@@ -1,11 +1,5 @@
 #include "word.h"
 
-static bool is_keyword(string word);
-static bool is_operator(string word);
-static bool is_variable(string word);
-static bool is_digit(string word);
-static bool is_letter(char c);
-static bool is_num(char c);
 word::word(string w):
 legal(true)
 {
@@ -40,7 +34,26 @@ word::is_annot() const
 {
     if (name == annot_sym) return true;
     return false;
+}
 
+bool
+word::is_conditopt() const
+{
+    if (type_id != OPERATOR) return false;
+    for (const auto& opt : condition_opt) {
+        if (name == opt) return true;
+    }
+    return true;
+}
+
+bool
+word::is_conditkw() const
+{
+    if (type_id != KEYWORD) return false;
+    for (const auto& kw : condition_kw) {
+        if (name == kw) return true;
+    }
+    return true;
 }
 
 void

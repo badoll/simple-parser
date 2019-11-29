@@ -25,5 +25,3 @@ $(OBJ)/%.o: $(SRC)/%.cpp
 clean:
 	rm -f $(MAIN)
 	rm -f $(OBJ)/*.o
-
-
